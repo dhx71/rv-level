@@ -1,0 +1,9 @@
+CACHE MANIFEST
+# v1 - update this version comment to force refresh
+
+index.html
+top-view.jpeg
+icon.jpeg
+
+NETWORK:
+*

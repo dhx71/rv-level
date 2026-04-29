@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html manifest="cache.mf">
+    <title>RV Level</title>
+    <style>
+body, button {
+    font-size: 150%;
+    width:98%;
+
+}
+table {
+    width: 100%;
+}
+.left {
+    width: 20%;
+    text-align: right;
+}
+.center {
+    width: 60%;
+}
+.right {
+    width: 20%;
+}
+.bottom {
+    vertical-align: bottom;
+}
+img {
+    width: 100%;
+}
+    </style>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+        <link rel="apple-touch-icon" href="./icon.jpeg">
+    </head>
+
+    <script>
+        const RVLen = 159;
+        const RVWidth = 71.5
+        let north = 0.0;
+
+        async function start() {
+            if (typeof DeviceOrientationEvent.requestPermission === "function") {
+                await DeviceOrientationEvent.requestPermission()
+            }
+            window.addEventListener("deviceorientation", handleOrientationEvent);
+            document.getElementById("btnStart").style = "display: none;"
+            document.getElementById("btnStop").style = "display: block;"
+        }
+        async function stop() {
+            window.removeEventListener("deviceorientation", handleOrientationEvent);
+            document.getElementById("btnStart").style = "display: block;"
+            document.getElementById("btnStop").style = "display: none;"
+        }
+        function getTanFromDegrees(degrees) {
+            return Math.tan((degrees * Math.PI) / 180);
+        }
+        function handleOrientationEvent(event) {
+            const frontToBack = event.beta
+            const leftToRight = event.gamma
+            north = event.alpha
+            let back_offset = RVLen * getTanFromDegrees(frontToBack)
+            let right_offset = RVWidth * getTanFromDegrees(leftToRight)
+            let FL = 0, FR = 0, RL = 0, RR = 0;
+            if (back_offset > 0) {
+                RL = RR = back_offset
+            } else {
+                FL = FR = -back_offset
+            }
+            if (right_offset > 0) {
+                FR += right_offset
+                RR += right_offset
+            } else {
+                FL += -right_offset
+                RL += -right_offset
+            }
+            FL -= Math.min(FL, FR, RL, RR)
+            FR -= Math.min(FL, FR, RL, RR)
+            RL -= Math.min(FL, FR, RL, RR)
+            RR -= Math.min(FL, FR, RL, RR)
+            document.getElementById("FL").innerText = ""+Math.round(10*FL)/10
+            document.getElementById("FR").innerText = ""+Math.round(10*FR)/10
+            document.getElementById("RL").innerText = ""+Math.round(10*RL)/10
+            document.getElementById("RR").innerText = ""+Math.round(10*RR)/10
+
+        }
+
+    </script>
+    <body>
+    
+        <h1>RV Level</h1>
+        <button id="btnStart" style="display: block;" onclick="start()">start</button>
+        <button id="btnStop"  style="display: none;"  onclick="stop()">stop</button>
+        <table>
+            <tr>
+                <td class="left" id="FL"></td>
+                <td class="center" rowspan="3"><img src="top-view.jpeg" /></td>
+                <td class="right" id="FR"></td>
+            </tr>
+            <tr>
+                <td class="left" ></td>
+                <td class="right"></td>
+            </tr>
+            <tr>
+                <td class="left bottom" id="RL"></td>
+                <td class="right bottom" id="RR"></td>
+            </tr>
+        </table>
+    </body>
+</html>
