@@ -285,10 +285,6 @@
             window.removeEventListener('deviceorientation', handleOrientationEvent);
             document.getElementById('btnStart').style.display = 'block';
             document.getElementById('btnStop').style.display = 'none';
-            ['FL','FR','RL','RR'].forEach(id => {
-                document.getElementById(id).innerText = '—';
-                document.getElementById(id).className = 'corner-value';
-            });
         }
 
         function getTanFromDegrees(deg) {
