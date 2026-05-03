@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html manifest="cache.mf">
+<html>
     <title>RV Level</title>
     <style>
 body, button {
@@ -32,7 +32,14 @@ img {
         <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
         <meta name="viewport" content="width=device-width, initial-scale=1" /> 
         <link rel="apple-touch-icon" href="./icon.jpeg">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="RV Level">
     </head>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    </script>
 
     <script>
         const RVLen = 159;
