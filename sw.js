@@ -1,4 +1,4 @@
-const CACHE = 'rv-level-v2';
+const CACHE = 'rv-level-v3';
 const FILES = [
   './',
   './index.html',
