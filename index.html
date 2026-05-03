@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RV Level</title>
     <link rel="apple-touch-icon" href="./icon.jpeg">
+    <link rel="manifest" href="./manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="RV Level">
@@ -110,6 +111,53 @@
         .fr { grid-column: 3; grid-row: 1; }
         .rl { grid-column: 1; grid-row: 3; }
         .rr { grid-column: 3; grid-row: 3; }
+
+        /* install banner */
+        #install-banner {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #0f3460;
+            border-top: 1px solid #a8d8ea44;
+            padding: 14px 16px;
+            z-index: 999;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+        }
+        #install-banner.visible { display: block; }
+
+        .banner-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .banner-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .banner-text { flex: 1; font-size: 0.88rem; line-height: 1.4; color: #e0e0e0; }
+        .banner-text strong { color: #a8d8ea; }
+        .banner-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+        .btn-install {
+            background: #a8d8ea;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-dismiss {
+            background: transparent;
+            border: 1px solid #7f8c8d;
+            border-radius: 8px;
+            color: #7f8c8d;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -148,12 +196,71 @@
         </div>
     </div>
 
+    <!-- install banner -->
+    <div id="install-banner">
+        <div class="banner-row">
+            <div class="banner-icon" id="banner-icon">📲</div>
+            <div class="banner-text" id="banner-text"></div>
+            <div class="banner-actions">
+                <button class="btn-install" id="btn-install" style="display:none" onclick="triggerInstall()">Install</button>
+                <button class="btn-dismiss" onclick="dismissBanner()">✕</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js');
         }
     </script>
     <script>
+        // --- Install prompt logic ---
+        let deferredPrompt = null;
+
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        const isInstalled = window.navigator.standalone === true ||
+            window.matchMedia('(display-mode: standalone)').matches;
+
+        function dismissBanner() {
+            document.getElementById('install-banner').classList.remove('visible');
+            localStorage.setItem('installDismissed', '1');
+        }
+
+        function triggerInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+                dismissBanner();
+            }
+        }
+
+        function showBanner(mode) {
+            if (localStorage.getItem('installDismissed')) return;
+            const text = document.getElementById('banner-text');
+            if (mode === 'ios') {
+                document.getElementById('banner-icon').textContent = '📤';
+                text.innerHTML = 'Install <strong>RV Level</strong> on your iPhone: tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.';
+            } else {
+                document.getElementById('banner-icon').textContent = '📲';
+                text.innerHTML = 'Install <strong>RV Level</strong> as an app for quick offline access.';
+                document.getElementById('btn-install').style.display = 'block';
+            }
+            document.getElementById('install-banner').classList.add('visible');
+        }
+
+        if (!isInstalled) {
+            if (isIOS) {
+                showBanner('ios');
+            } else {
+                window.addEventListener('beforeinstallprompt', e => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    showBanner('android');
+                });
+            }
+        }
+        // --- End install prompt logic ---
+
         const RVLen = 159;
         const RVWidth = 71.5;
         let north = 0.0;

@@ -1,0 +1,12 @@
+{
+  "name": "RV Level",
+  "short_name": "RV Level",
+  "description": "Level your RV using your phone's tilt sensor",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    { "src": "./icon.jpeg", "sizes": "any", "type": "image/jpeg" }
+  ]
+}
