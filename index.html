@@ -54,12 +54,12 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            grid-template-rows: auto auto auto;
+            grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1fr);
+            grid-template-rows: 1fr 1fr 1fr;
             gap: 10px;
             width: 100%;
             max-width: 420px;
-            align-items: center;
+            align-items: stretch;
         }
 
         .corner {
@@ -68,6 +68,11 @@
             border-radius: 14px;
             padding: 14px 10px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 90px;
+            overflow: hidden;
         }
 
         .corner-label {
@@ -76,14 +81,18 @@
             text-transform: uppercase;
             color: #7f8c8d;
             margin-bottom: 6px;
+            white-space: nowrap;
         }
 
         .corner-value {
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 5vw, 2rem);
             font-weight: 800;
             font-variant-numeric: tabular-nums;
             color: #27ae60;
             line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .corner-value.warn  { color: #f39c12; }
@@ -93,6 +102,7 @@
             font-size: 0.7rem;
             color: #7f8c8d;
             margin-top: 4px;
+            white-space: nowrap;
         }
 
         .rv-image {
